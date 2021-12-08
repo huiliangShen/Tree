@@ -1,6 +1,8 @@
 package tree;
 // package java.time.format;
 
+import javax.swing.Spring;
+
 public class RBTree<Key extends Comparable<Key>, Value> {
     private Node root;
     private int size;
@@ -20,6 +22,14 @@ public class RBTree<Key extends Comparable<Key>, Value> {
             this.left = null;
             this.right = null;
             this.color = RED;
+        }
+
+        @Override
+        public String toString() {
+            return "{\"Key\":" + this.key + ",\"Value\":" + this.val + ",\"left\":"
+                    + (this.left != null ? this.left.toString() : "null") + ",\"right\":"
+                    + (this.right != null ? this.right.toString() : this.right) + ",\"color\":"
+                    + (this.color ? "\"RED\"" : "\"BLACK\"") + "}";
         }
     }
 
@@ -56,7 +66,7 @@ public class RBTree<Key extends Comparable<Key>, Value> {
         // 2-3树3节点转普通节点定义：是左斜的
         x.color = node.color;
         node.color = RED;
-        return node;
+        return x;
     }
 
     //
@@ -74,7 +84,7 @@ public class RBTree<Key extends Comparable<Key>, Value> {
         // 2-3树3节点转普通节点定义：是左斜的
         x.color = node.color;
         node.color = RED;
-        return node;
+        return x;
     }
 
     public void put(Key key, Value val) {
@@ -83,12 +93,23 @@ public class RBTree<Key extends Comparable<Key>, Value> {
         root.color = BLACK;
     }
 
+    /**
+     *     black     black        black   
+     *   ↙         ↙             ↙         black                 red
+     * red  -->  red   -->    red  -->  ↙        ↘     -->     ↙    ↘
+     *             ↘        ↙         red         red       black   black
+     *               red  red       
+     * @param x
+     * @param key
+     * @param val
+     * @return
+     */
     private Node put(Node x, Key key, Value val) {
         if (x == null) {
             size++;
             return new Node(key, val);
         }
-        int cmp = key.compareTo(key);
+        int cmp = key.compareTo(x.key);
         if (cmp < 0) {
             x.left = put(x.left, key, val);
         } else if (cmp > 0) {
@@ -100,9 +121,9 @@ public class RBTree<Key extends Comparable<Key>, Value> {
         if (isRed(x.right) && !isRed(x.left)) {
             x = leftRotate(x);
         }
-        //         10                              10
+        //         10                              8
         //       ↙        二三树                  ↙   ↘
-        //     8          ===    6 - 8 - 10 === 6      8 
+        //     8          ===    6 - 8 - 10 === 6      10 
         //   ↙                                 
         // 6
         if (isRed(x.left) && isRed(x.left.left)) {
@@ -112,5 +133,10 @@ public class RBTree<Key extends Comparable<Key>, Value> {
             filpColors(x);
         }
         return x;
+    }
+
+    @Override
+    public String toString() {
+        return root.toString();
     }
 }
